@@ -50,7 +50,7 @@ def format_time(dt: datetime, fmt: str = "HH:MM") -> str:
 
 
 def get_next_update_time(
-    interval_minutes: int = 60, timezone: str = "Asia/Tashkent"
+    interval_minutes: int = 1, timezone: str = "Asia/Tashkent"
 ) -> datetime:
     """
     Keyingi yangilanish vaqtini hisoblab qaytaradi.
@@ -67,7 +67,7 @@ def get_next_update_time(
 
 
 def format_next_update(
-    interval_minutes: int = 60, timezone: str = "Asia/Tashkent"
+    interval_minutes: int = 1, timezone: str = "Asia/Tashkent"
 ) -> str:
     """Keyingi yangilanish vaqtini o'qish uchun qulay formatda qaytaradi."""
     next_time = get_next_update_time(interval_minutes, timezone)

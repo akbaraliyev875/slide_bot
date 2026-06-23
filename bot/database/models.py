@@ -94,8 +94,10 @@ async def create_tables():
     try:
         for table_sql in ALL_TABLES:
             await db.execute(table_sql)
+        # Eski 60 minutlik default intervalga ega bo'lganlarni 1 minutga o'tkazamiz
+        await db.execute("UPDATE user_settings SET update_interval = 1 WHERE update_interval = 60")
         await db.commit()
-        logger.info("Barcha jadvallar muvaffaqiyatli yaratildi")
+        logger.info("Barcha jadvallar muvaffaqiyatli yaratildi va interval qiymatlari migratsiya qilindi")
     except Exception as e:
         logger.error(f"Jadval yaratishda xatolik: {e}")
         raise
