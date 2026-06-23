@@ -15,7 +15,7 @@ VALID_BRACKET_STYLES = ["[]", "()", "{}", "<>", "||", "none"]
 VALID_LANGUAGES = ["uz", "ru", "en"]
 
 # Interval chegaralari (daqiqalarda)
-MIN_INTERVAL = 15
+MIN_INTERVAL = 1
 MAX_INTERVAL = 1440  # 24 soat
 
 # Prefix maksimal uzunligi
