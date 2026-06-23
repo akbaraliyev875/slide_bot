@@ -6,7 +6,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from loguru import logger
 
-from bot.database.repositories import settings_repo
+from bot.database.repositories import settings_repo, user_repo
 from bot.services.scheduler_service import update_user_job
 from bot.keyboards.inline import (
     get_main_menu_keyboard,
@@ -222,7 +222,6 @@ async def cb_toggle_daily(callback: CallbackQuery, lang: str = "uz", **kwargs):
 
     await settings_repo.update_settings(user_id, notify_daily=int(not current))
 
-    # Yangilangan klaviatura
     notify_errors = bool(user_settings.get("notify_errors", 1)) if user_settings else True
     await callback.message.edit_reply_markup(
         reply_markup=get_notify_keyboard(not current, notify_errors),
@@ -239,7 +238,6 @@ async def cb_toggle_errors(callback: CallbackQuery, lang: str = "uz", **kwargs):
 
     await settings_repo.update_settings(user_id, notify_errors=int(not current))
 
-    # Yangilangan klaviatura
     notify_daily = bool(user_settings.get("notify_daily", 0)) if user_settings else False
     await callback.message.edit_reply_markup(
         reply_markup=get_notify_keyboard(notify_daily, not current),
@@ -275,7 +273,8 @@ async def cb_admin_banned(callback: CallbackQuery, **kwargs):
         lines = []
         for b in banned:
             lines.append(
-                f"• {b.get('first_name', '?')} (ID: {b['id']}) — {b.get('reason', '—')}"
+                f"• {b.get('first_name', '?')}"
+                f" (ID: {b['id']}) — {b.get('reason', '—')}"
             )
         text = "🚫 <b>Bloklangan foydalanuvchilar:</b>\n\n" + "\n".join(lines)
 
@@ -284,6 +283,58 @@ async def cb_admin_banned(callback: CallbackQuery, **kwargs):
         parse_mode="HTML",
         reply_markup=get_admin_keyboard(),
     )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "admin_stats")
+async def cb_admin_stats(callback: CallbackQuery, **kwargs):
+    """Umumiy statistika (admin)."""
+    from bot.database.repositories import history_repo as hr
+
+    counts = await user_repo.get_users_count()
+    all_users = await user_repo.get_all_users()
+
+    today_total = 0
+    for u in all_users:
+        today_total += await hr.get_today_count(u["id"])
+
+    await callback.message.edit_text(
+        f"📊 <b>Statistika</b>\n\n"
+        f"👥 Jami foydalanuvchilar: <b>{counts['total']}</b>\n"
+        f"✅ Aktiv: <b>{counts['active']}</b>\n"
+        f"🚫 Bloklangan: <b>{counts['banned']}</b>\n"
+        f"📅 Bugungi yangilanishlar: <b>{today_total}</b>",
+        parse_mode="HTML",
+        reply_markup=get_admin_keyboard(),
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "admin_broadcast")
+async def cb_admin_broadcast(callback: CallbackQuery, lang: str = "uz", **kwargs):
+    """Broadcast xabari yuborish (admin)."""
+    await callback.message.answer(
+        "📢 Barcha foydalanuvchilarga xabar yuborish uchun:\n"
+        "<code>/broadcast Xabar matni</code>",
+        parse_mode="HTML",
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data == "admin_logs")
+async def cb_admin_logs(callback: CallbackQuery, **kwargs):
+    """So'nggi loglarni ko'rish (admin)."""
+    import os
+    log_path = "logs/bot.log"
+    if os.path.exists(log_path):
+        with open(log_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        last_lines = lines[-20:] if len(lines) >= 20 else lines
+        log_text = "".join(last_lines).strip()
+        text = f"📋 <b>So'nggi loglar:</b>\n\n<pre>{log_text[:3000]}</pre>"
+    else:
+        text = "📋 Log fayl topilmadi."
+    await callback.message.answer(text, parse_mode="HTML")
     await callback.answer()
 
 
