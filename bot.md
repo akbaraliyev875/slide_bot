@@ -397,7 +397,7 @@ CREATE TABLE IF NOT EXISTS user_settings (
     timezone        TEXT DEFAULT 'Asia/Tashkent', -- pytz timezone string
     time_format     TEXT DEFAULT 'HH:MM',         -- HH:MM | HH:MM:SS | 12h
     bracket_style   TEXT DEFAULT '[]',            -- [] () {} <> ||
-    update_interval INTEGER DEFAULT 60,           -- Daqiqalarda
+    update_interval INTEGER DEFAULT 1,            -- Daqiqalarda
     prefix_text     TEXT DEFAULT '',              -- Vaqtdan oldingi matn
     language        TEXT DEFAULT 'uz',            -- uz | ru | en
     notify_daily    INTEGER DEFAULT 0,            -- Kunlik hisobot
@@ -530,7 +530,7 @@ WEBHOOK_PORT=8080
 # Default sozlamalar
 DEFAULT_TIMEZONE=Asia/Tashkent
 DEFAULT_LANGUAGE=uz
-DEFAULT_INTERVAL=60
+DEFAULT_INTERVAL=1
 ```
 
 ### `config.py`
@@ -545,7 +545,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     DEFAULT_TIMEZONE: str = "Asia/Tashkent"
     DEFAULT_LANGUAGE: str = "uz"
-    DEFAULT_INTERVAL: int = 60  # daqiqalar
+    DEFAULT_INTERVAL: int = 1  # daqiqalar
     
     class Config:
         env_file = ".env"

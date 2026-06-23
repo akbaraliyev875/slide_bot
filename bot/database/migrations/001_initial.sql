@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS user_settings (
     timezone        TEXT DEFAULT 'Asia/Tashkent',
     time_format     TEXT DEFAULT 'HH:MM',
     bracket_style   TEXT DEFAULT '[]',
-    update_interval INTEGER DEFAULT 60,
+    update_interval INTEGER DEFAULT 1,
     prefix_text     TEXT DEFAULT '',
     language        TEXT DEFAULT 'uz',
     notify_daily    INTEGER DEFAULT 0,

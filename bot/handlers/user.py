@@ -182,9 +182,9 @@ async def process_code(message: Message, state: FSMContext, lang: str = "uz", **
     if result == "success":
         # Scheduler job qo'shish
         user_settings = await settings_repo.get_settings(user_id)
-        interval = 60
+        interval = settings.DEFAULT_INTERVAL
         if user_settings:
-            interval = user_settings.get("update_interval", 60)
+            interval = user_settings.get("update_interval", settings.DEFAULT_INTERVAL)
 
         await add_user_job(user_id, interval)
 
@@ -239,7 +239,7 @@ async def cmd_status(message: Message, lang: str = "uz", **kwargs):
         return
 
     user_settings = await settings_repo.get_settings(user_id)
-    interval = user_settings.get("update_interval", 60) if user_settings else 60
+    interval = user_settings.get("update_interval", settings.DEFAULT_INTERVAL) if user_settings else settings.DEFAULT_INTERVAL
     timezone = user_settings.get("timezone", "Asia/Tashkent") if user_settings else "Asia/Tashkent"
     total = await history_repo.get_total_count(user_id)
     next_update = format_next_update(interval, timezone)
