@@ -44,7 +44,10 @@ class Settings(BaseSettings):
     # — Defaultlar —
     DEFAULT_TIMEZONE: str = "Asia/Tashkent"
     DEFAULT_LANGUAGE: str = "uz"
-    DEFAULT_INTERVAL: int = 1  # daqiqalarda
+
+    @property
+    def DEFAULT_INTERVAL(self) -> int:
+        return 1
 
     @property
     def db_path(self) -> Path:

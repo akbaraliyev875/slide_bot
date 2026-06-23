@@ -84,10 +84,19 @@ async def cmd_help(message: Message, lang: str = "uz", **kwargs):
 async def cmd_connect(message: Message, state: FSMContext, lang: str = "uz", **kwargs):
     """Profilni ulash — telefon raqam so'rash."""
     user_id = message.from_user.id
+    user = message.from_user
+
+    # Ro'yxatdan o'tganligini ta'minlash (agar bazada bo'lmasa)
+    await user_service.register_user(
+        user_id=user.id,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        username=user.username,
+    )
 
     # Allaqachon ulangan tekshirish
-    user = await user_repo.get_user(user_id)
-    if user and user.get("is_active"):
+    db_user = await user_repo.get_user(user_id)
+    if db_user and db_user.get("is_active"):
         await message.answer(get_text("already_connected", lang))
         return
 
@@ -138,6 +147,15 @@ async def process_phone_text(message: Message, state: FSMContext, lang: str = "u
 async def _process_phone(message: Message, state: FSMContext, phone: str, lang: str):
     """Telefon raqamni qayta ishlash."""
     user_id = message.from_user.id
+    user = message.from_user
+
+    # Ro'yxatdan o'tganligini ta'minlash (agar bazada bo'lmasa)
+    await user_service.register_user(
+        user_id=user.id,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        username=user.username,
+    )
 
     await message.answer(
         "⏳ Kod yuborilmoqda...",
